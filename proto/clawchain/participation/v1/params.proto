@@ -1,0 +1,35 @@
+syntax = "proto3";
+package clawchain.participation.v1;
+
+import "amino/amino.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/clawbotblockchain/clawchain/x/participation/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (amino.name) = "clawchain/x/participation/Params";
+  option (gogoproto.equal) = true;
+
+  uint64 epoch_duration = 1;
+  // min_stake is the minimum staking amount in base denom (aclaw).
+  // Stored as string to support 18-decimal token amounts that exceed uint64.
+  string min_stake = 2;
+  uint64 stake_weight = 3;
+  uint64 activity_weight = 4;
+  uint64 uptime_weight = 5;
+  // reward_pool_address is the module account that holds undistributed rewards.
+  string reward_pool_address = 6;
+  // daily_reward_amount is the amount of aclaw distributed per epoch (in base denom).
+  string daily_reward_amount = 7;
+  // worker_reward_ratio is the percentage of daily rewards allocated to workers (0-100).
+  // The remaining (100 - worker_reward_ratio) goes to validators.
+  uint64 worker_reward_ratio = 8;
+  // heartbeat_interval is the minimum seconds between worker heartbeats.
+  uint64 heartbeat_interval = 9;
+  // max_missed_heartbeats is the number of missed intervals before a worker is deactivated.
+  uint64 max_missed_heartbeats = 10;
+  // max_workers is the maximum number of worker registrations allowed (0 = unlimited).
+  // Slots are permanent — unregistering does NOT free a slot.
+  uint64 max_workers = 11;
+}

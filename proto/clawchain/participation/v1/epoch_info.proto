@@ -1,0 +1,13 @@
+syntax = "proto3";
+package clawchain.participation.v1;
+
+option go_package = "github.com/clawbotblockchain/clawchain/x/participation/types";
+
+// EpochInfo defines the EpochInfo message.
+message EpochInfo {
+  uint64 current_epoch = 1;
+  uint64 epoch_start_time = 2;
+  uint64 epoch_duration = 3;
+  // total_reward_distributed in base denom (aclaw). String to support 18-decimal amounts.
+  string total_reward_distributed = 4;
+}

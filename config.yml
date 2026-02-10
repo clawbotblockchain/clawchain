@@ -1,0 +1,30 @@
+version: 1
+validation: sovereign
+default_denom: aclaw
+accounts:
+- name: alice
+  coins:
+  - 200000000000000000000000aclaw
+- name: bob
+  coins:
+  - 100000000000000000000000aclaw
+- name: founder
+  coins:
+  - 30000000000000000000000000000aclaw
+- name: treasury
+  coins:
+  - 10000000000000000000000000000aclaw
+client:
+  openapi:
+    path: docs/static/openapi.json
+faucet:
+  name: bob
+  coins:
+  - 100000000000000000000aclaw
+validators:
+- name: alice
+  bonded: 100000000000000000000000aclaw
+- name: validator1
+  bonded: 100000000000000000000000aclaw
+- name: validator2
+  bonded: 100000000000000000000000aclaw

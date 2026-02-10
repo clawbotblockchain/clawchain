@@ -1,0 +1,28 @@
+[Unit]
+Description=ClawChain Blockchain Node
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=clawchain
+Group=clawchain
+Type=forking
+WorkingDirectory=/opt/clawchain
+ExecStart=/opt/clawchain/scripts/localnet-start.sh
+ExecStop=/opt/clawchain/scripts/localnet-stop.sh
+RemainAfterExit=yes
+Restart=on-failure
+RestartSec=10
+LimitNOFILE=65535
+
+# Environment - adjust paths as needed for your installation
+Environment="PATH=/usr/local/go/bin:/usr/local/bin:/usr/bin:/bin"
+Environment="GOPATH=/opt/clawchain/go"
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=clawchaind
+
+[Install]
+WantedBy=multi-user.target

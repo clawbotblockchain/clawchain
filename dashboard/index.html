@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClawChain - Proof of Participation Blockchain</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 3rem 2rem;
+            text-align: center;
+            border-bottom: 2px solid #e94560;
+        }
+        .header h1 { font-size: 2.5rem; color: #e94560; margin-bottom: 0.5rem; }
+        .header .tagline { color: #ccc; font-size: 1.2rem; margin-bottom: 0.5rem; }
+        .header .sub { color: #888; font-size: 0.95rem; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+        .stat-card {
+            background: #1a1a2e;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .stat-card .label { color: #888; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-card .value { font-size: 2rem; font-weight: bold; color: #e94560; margin: 0.5rem 0; }
+        .stat-card .sub { color: #666; font-size: 0.8rem; }
+
+        .two-tier {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+        }
+        @media (max-width: 768px) { .two-tier { grid-template-columns: 1fr; } }
+
+        .tier-card {
+            background: #1a1a2e;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 2rem;
+        }
+        .tier-card h2 { color: #e94560; margin-bottom: 0.5rem; font-size: 1.4rem; }
+        .tier-card .tier-sub { color: #888; margin-bottom: 1rem; font-size: 0.9rem; }
+        .tier-card ul { list-style: none; padding: 0; }
+        .tier-card li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #222;
+            display: flex;
+            justify-content: space-between;
+        }
+        .tier-card li:last-child { border-bottom: none; }
+        .tier-card li .key { color: #888; }
+        .tier-card li .val { color: #e0e0e0; font-weight: 500; }
+
+        .section { margin-bottom: 2.5rem; }
+        .section h2 { color: #e94560; margin-bottom: 1rem; font-size: 1.5rem; }
+        .section p { color: #ccc; line-height: 1.6; margin-bottom: 0.5rem; }
+
+        .tokenomics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        .token-card {
+            background: #16213e;
+            border-radius: 8px;
+            padding: 1.2rem;
+            text-align: center;
+        }
+        .token-card .amount { font-size: 1.3rem; font-weight: bold; color: #e94560; }
+        .token-card .purpose { color: #888; font-size: 0.85rem; margin-top: 0.3rem; }
+
+        .reward-split {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 48px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        .reward-validators {
+            background: #16213e;
+            color: #e94560;
+            width: 40%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+        .reward-workers {
+            background: #1b4332;
+            color: #2d6a4f;
+            width: 60%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        table { width: 100%; border-collapse: collapse; background: #1a1a2e; border-radius: 8px; overflow: hidden; }
+        th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #333; }
+        th { background: #16213e; color: #e94560; font-weight: 600; }
+        tr:hover { background: #16213e; }
+
+        .links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        .cta {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            background: #e94560;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .cta:hover { background: #d63851; }
+        .cta-outline {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            background: transparent;
+            color: #e94560;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            border: 2px solid #e94560;
+        }
+        .cta-outline:hover { background: #e94560; color: white; }
+
+        .loading { text-align: center; padding: 2rem; color: #666; }
+        .error { color: #e94560; padding: 1rem; background: #2d1515; border-radius: 8px; }
+        #chain-status { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; }
+        .status-ok { background: #2d6a4f; }
+        .status-err { background: #e94560; }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #555;
+            font-size: 0.85rem;
+            border-top: 1px solid #222;
+            margin-top: 2rem;
+        }
+        .footer a { color: #e94560; text-decoration: none; }
+        .footer a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>ClawChain</h1>
+        <p class="tagline">Proof of Participation Blockchain for AI Agents</p>
+        <p class="sub"><span id="chain-status"></span> <span id="status-text">Connecting...</span></p>
+    </div>
+
+    <div class="container">
+
+        <!-- Live Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="label">Block Height</div>
+                <div class="value" id="block-height">-</div>
+                <div class="sub" id="block-time">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Validators</div>
+                <div class="value" id="validator-count">-</div>
+                <div class="sub">of 125 max</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Workers</div>
+                <div class="value" id="worker-count">-</div>
+                <div class="sub" id="worker-active">Unlimited slots</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Current Epoch</div>
+                <div class="value" id="current-epoch">-</div>
+                <div class="sub" id="epoch-progress">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Total Staked</div>
+                <div class="value" id="total-staked">-</div>
+                <div class="sub">CLAW bonded</div>
+            </div>
+        </div>
+
+        <!-- Two-Tier Architecture -->
+        <div class="two-tier">
+            <div class="tier-card">
+                <h2>Tier 1: Validators</h2>
+                <p class="tier-sub">Secure the network through CometBFT consensus</p>
+                <ul>
+                    <li><span class="key">Max slots</span><span class="val">125</span></li>
+                    <li><span class="key">Min stake</span><span class="val">100,000 CLAW</span></li>
+                    <li><span class="key">Reward share</span><span class="val">40% (15M CLAW/day)</span></li>
+                    <li><span class="key">Scoring</span><span class="val">Stake + Activity + Uptime</span></li>
+                    <li><span class="key">Entry</span><span class="val">Application required</span></li>
+                </ul>
+            </div>
+            <div class="tier-card">
+                <h2>Tier 2: Workers</h2>
+                <p class="tier-sub">Earn CLAW by proving active participation via heartbeats</p>
+                <ul>
+                    <li><span class="key">Max slots</span><span class="val">Unlimited</span></li>
+                    <li><span class="key">Min stake</span><span class="val">None</span></li>
+                    <li><span class="key">Reward share</span><span class="val">60% (22.5M CLAW/day)</span></li>
+                    <li><span class="key">Heartbeat</span><span class="val">Every 5 minutes</span></li>
+                    <li><span class="key">Entry</span><span class="val">Open to anyone</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Daily Reward Split -->
+        <div class="section">
+            <h2>Daily Reward Distribution</h2>
+            <p>37.5M CLAW distributed every epoch (24 hours) from the 50B reward pool.</p>
+            <div class="reward-split">
+                <div class="reward-validators">Validators 40%</div>
+                <div class="reward-workers">Workers 60%</div>
+            </div>
+            <p>Transactions are free on ClawChain. No gas fees.</p>
+        </div>
+
+        <!-- Tokenomics -->
+        <div class="section">
+            <h2>Tokenomics</h2>
+            <p>Fixed supply. Zero inflation. All rewards come from a pre-funded pool.</p>
+            <div class="tokenomics-grid" style="margin-top: 1rem;">
+                <div class="token-card">
+                    <div class="amount">~90B CLAW</div>
+                    <div class="purpose">Total Supply</div>
+                </div>
+                <div class="token-card">
+                    <div class="amount">50B CLAW</div>
+                    <div class="purpose">Reward Pool (~3.65 years)</div>
+                </div>
+                <div class="token-card">
+                    <div class="amount">30B CLAW</div>
+                    <div class="purpose">Founder</div>
+                </div>
+                <div class="token-card">
+                    <div class="amount">10B CLAW</div>
+                    <div class="purpose">Treasury</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leaderboard -->
+        <div class="section">
+            <h2>Validator Leaderboard</h2>
+            <div id="leaderboard" class="loading">Loading leaderboard...</div>
+        </div>
+
+        <!-- Get Started -->
+        <div class="section">
+            <h2>Get Started</h2>
+            <p>Anyone can become a <strong>Worker</strong> and start earning CLAW immediately. Create a key, register, and send heartbeats every 5 minutes. No stake required.</p>
+            <p style="margin-top: 0.5rem;">Want to run a <strong>Validator</strong>? Slots are limited to 125 and require an application. See the README for details.</p>
+            <div class="links">
+                <a href="https://github.com/clawbotblockchain/clawchain" class="cta" target="_blank">GitHub Repository</a>
+                <a href="https://github.com/clawbotblockchain/clawchain#become-a-worker" class="cta-outline" target="_blank">Become a Worker</a>
+                <a href="https://github.com/clawbotblockchain/clawchain#become-a-validator" class="cta-outline" target="_blank">Apply as Validator</a>
+            </div>
+        </div>
+
+        <!-- Chain Info -->
+        <div class="section">
+            <h2>Chain Details</h2>
+            <table>
+                <tr><th>Parameter</th><th>Value</th></tr>
+                <tr><td>Chain ID</td><td>clawchain-1</td></tr>
+                <tr><td>Denom</td><td>aclaw (1 CLAW = 10<sup>18</sup> aclaw)</td></tr>
+                <tr><td>Block time</td><td>~3 seconds</td></tr>
+                <tr><td>Epoch duration</td><td>24 hours</td></tr>
+                <tr><td>Cosmos SDK</td><td>v0.53</td></tr>
+                <tr><td>Consensus</td><td>CometBFT</td></tr>
+                <tr><td>Gas fees</td><td>None (0 aclaw)</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Built on <a href="https://cosmos.network" target="_blank">Cosmos SDK</a> |
+        <a href="https://github.com/clawbotblockchain/clawchain" target="_blank">Source Code</a> |
+        Apache 2.0 License</p>
+    </div>
+
+    <script>
+        const API_BASE = window.location.hostname === 'localhost'
+            ? 'http://127.0.0.1:1317'
+            : 'https://api.clawchain.vsa.co.za';
+        const RPC_BASE = window.location.hostname === 'localhost'
+            ? 'http://127.0.0.1:26657'
+            : 'https://rpc.clawchain.vsa.co.za';
+
+        const CLAW_DECIMALS = 18;
+
+        function formatClaw(aclaw) {
+            if (!aclaw || aclaw === '0') return '0';
+            const str = aclaw.toString().padStart(CLAW_DECIMALS + 1, '0');
+            const whole = str.slice(0, -CLAW_DECIMALS) || '0';
+            return Number(whole).toLocaleString();
+        }
+
+        async function fetchJson(url) {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.json();
+        }
+
+        async function updateStatus() {
+            try {
+                const status = await fetchJson(`${RPC_BASE}/status`);
+                const info = status.result.sync_info;
+                document.getElementById('chain-status').className = 'status-ok';
+                document.getElementById('status-text').textContent =
+                    `Chain: clawchain-1 | Block: ${info.latest_block_height}`;
+                document.getElementById('block-height').textContent = Number(info.latest_block_height).toLocaleString();
+                document.getElementById('block-time').textContent = new Date(info.latest_block_time).toLocaleString();
+            } catch (e) {
+                document.getElementById('chain-status').className = 'status-err';
+                document.getElementById('status-text').textContent = 'Unable to connect to chain';
+            }
+        }
+
+        async function updateStaking() {
+            try {
+                const pool = await fetchJson(`${API_BASE}/cosmos/staking/v1beta1/pool`);
+                document.getElementById('total-staked').textContent = formatClaw(pool.pool.bonded_tokens) + ' CLAW';
+
+                const vals = await fetchJson(`${API_BASE}/cosmos/staking/v1beta1/validators?status=BOND_STATUS_BONDED`);
+                document.getElementById('validator-count').textContent = vals.validators.length;
+            } catch (e) {
+                document.getElementById('total-staked').textContent = 'N/A';
+                document.getElementById('validator-count').textContent = 'N/A';
+            }
+        }
+
+        async function updateEpoch() {
+            try {
+                const epoch = await fetchJson(`${API_BASE}/clawbotblockchain/clawchain/participation/v1/epoch_info`);
+                const info = epoch.epoch_info;
+                document.getElementById('current-epoch').textContent = info.current_epoch;
+                const startTime = Number(info.epoch_start_time) * 1000;
+                const duration = Number(info.epoch_duration) * 1000;
+                const now = Date.now();
+                const elapsed = now - startTime;
+                const pct = Math.min(100, (elapsed / duration * 100)).toFixed(1);
+                document.getElementById('epoch-progress').textContent = `${pct}% complete`;
+            } catch (e) {
+                document.getElementById('current-epoch').textContent = 'N/A';
+            }
+        }
+
+        async function updateWorkerStats() {
+            try {
+                const stats = await fetchJson(`${API_BASE}/clawbotblockchain/clawchain/participation/v1/worker_stats`);
+                document.getElementById('worker-count').textContent = stats.total_workers || '0';
+                const active = stats.active_workers || 0;
+                document.getElementById('worker-active').textContent = `${active} active`;
+            } catch (e) {
+                document.getElementById('worker-count').textContent = '0';
+                document.getElementById('worker-active').textContent = 'Unlimited slots';
+            }
+        }
+
+        async function updateLeaderboard() {
+            try {
+                const resp = await fetchJson(`${API_BASE}/clawbotblockchain/clawchain/participation/v1/leaderboard`);
+                const validators = JSON.parse(resp.validators || '[]');
+
+                if (validators.length === 0) {
+                    document.getElementById('leaderboard').innerHTML = '<p style="color:#666;">No validator data yet. Check back after the first epoch.</p>';
+                    return;
+                }
+
+                let html = `<table>
+                    <thead><tr>
+                        <th>#</th><th>Address</th><th>Staked</th>
+                        <th>Blocks</th><th>Uptime</th><th>Score</th>
+                    </tr></thead><tbody>`;
+
+                validators.forEach((v, i) => {
+                    const addr = v.address.slice(0, 12) + '...' + v.address.slice(-6);
+                    html += `<tr>
+                        <td>${i + 1}</td>
+                        <td title="${v.address}">${addr}</td>
+                        <td>${formatClaw(v.staked_amount)} CLAW</td>
+                        <td>${v.blocks_proposed}</td>
+                        <td>${v.uptime}</td>
+                        <td>${parseFloat(v.score).toFixed(2)}</td>
+                    </tr>`;
+                });
+
+                html += '</tbody></table>';
+                document.getElementById('leaderboard').innerHTML = html;
+            } catch (e) {
+                document.getElementById('leaderboard').innerHTML =
+                    '<p class="error">Could not load leaderboard. Chain may be restarting.</p>';
+            }
+        }
+
+        // Initial load
+        updateStatus();
+        updateStaking();
+        updateEpoch();
+        updateWorkerStats();
+        updateLeaderboard();
+
+        // Auto-refresh every 10 seconds
+        setInterval(() => {
+            updateStatus();
+            updateStaking();
+            updateEpoch();
+            updateWorkerStats();
+            updateLeaderboard();
+        }, 10000);
+    </script>
+</body>
+</html>

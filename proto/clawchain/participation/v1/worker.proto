@@ -1,0 +1,24 @@
+syntax = "proto3";
+package clawchain.participation.v1;
+
+option go_package = "github.com/clawbotblockchain/clawchain/x/participation/types";
+
+// WorkerInfo defines a registered worker in the participation module.
+message WorkerInfo {
+  // index is the worker's address (bech32).
+  string index = 1;
+  // name is the human-readable name of the worker.
+  string name = 2;
+  // registered_at is the unix timestamp of registration.
+  uint64 registered_at = 3;
+  // active indicates whether the worker is currently active.
+  bool active = 4;
+  // heartbeat_count is the number of heartbeats in the current epoch.
+  uint64 heartbeat_count = 5;
+  // last_heartbeat_time is the unix timestamp of the last heartbeat.
+  uint64 last_heartbeat_time = 6;
+  // last_active_epoch is the last epoch in which the worker was active.
+  uint64 last_active_epoch = 7;
+  // total_rewards_earned in base denom (aclaw). String for 18-decimal support.
+  string total_rewards_earned = 8;
+}

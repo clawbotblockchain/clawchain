@@ -1,0 +1,16 @@
+syntax = "proto3";
+package clawchain.participation.v1;
+
+option go_package = "github.com/clawbotblockchain/clawchain/x/participation/types";
+
+// RewardRecord defines the RewardRecord message.
+message RewardRecord {
+  string index = 1;
+  // reward_amount in base denom (aclaw). String to support 18-decimal amounts.
+  string reward_amount = 2;
+  uint64 stake_score = 3;
+  uint64 activity_score = 4;
+  uint64 uptime_score = 5;
+  bool claimed = 6;
+  uint64 epoch = 7;
+}

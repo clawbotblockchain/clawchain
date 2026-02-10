@@ -1,0 +1,222 @@
+syntax = "proto3";
+
+package clawchain.participation.v1;
+
+import "amino/amino.proto";
+import "clawchain/participation/v1/epoch_info.proto";
+import "clawchain/participation/v1/params.proto";
+import "clawchain/participation/v1/reward_record.proto";
+import "clawchain/participation/v1/validator_metrics.proto";
+import "clawchain/participation/v1/worker.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+
+option go_package = "github.com/clawbotblockchain/clawchain/x/participation/types";
+
+// Query defines the gRPC querier service.
+service Query {
+  // Parameters queries the parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/clawbotblockchain/clawchain/participation/v1/params";
+  }
+
+  // ListValidatorMetrics Queries a list of ValidatorMetrics items.
+  rpc GetValidatorMetrics(QueryGetValidatorMetricsRequest) returns (QueryGetValidatorMetricsResponse) {
+    option (google.api.http).get = "/clawbotblockchain/clawchain/participation/v1/validator_metrics/{index}";
+  }
+
+  // ListValidatorMetrics defines the ListValidatorMetrics RPC.
+  rpc ListValidatorMetrics(QueryAllValidatorMetricsRequest) returns (QueryAllValidatorMetricsResponse) {
+    option (google.api.http).get = "/clawbotblockchain/clawchain/participation/v1/validator_metrics";
+  }
+
+  // Queries a EpochInfo by index.
+  rpc GetEpochInfo(QueryGetEpochInfoRequest) returns (QueryGetEpochInfoResponse) {
+    option (google.api.http).get = "/clawbotblockchain/clawchain/participation/v1/epoch_info";
+  }
+
+  // ListRewardRecord Queries a list of RewardRecord items.
+  rpc GetRewardRecord(QueryGetRewardRecordRequest) returns (QueryGetRewardRecordResponse) {
+    option (google.api.http).get = "/clawbotblockchain/clawchain/participation/v1/reward_record/{index}";
+  }
+
+  // ListRewardRecord defines the ListRewardRecord RPC.
+  rpc ListRewardRecord(QueryAllRewardRecordRequest) returns (QueryAllRewardRecordResponse) {
+    option (google.api.http).get = "/clawbotblockchain/clawchain/participation/v1/reward_record";
+  }
+
+  // Metrics Queries a list of Metrics items.
+  rpc Metrics(QueryMetricsRequest) returns (QueryMetricsResponse) {
+    option (google.api.http).get = "/clawbotblockchain/clawchain/participation/v1/metrics/{validator_address}";
+  }
+
+  // Leaderboard Queries a list of Leaderboard items.
+  rpc Leaderboard(QueryLeaderboardRequest) returns (QueryLeaderboardResponse) {
+    option (google.api.http).get = "/clawbotblockchain/clawchain/participation/v1/leaderboard";
+  }
+
+  // Rewards Queries a list of Rewards items.
+  rpc Rewards(QueryRewardsRequest) returns (QueryRewardsResponse) {
+    option (google.api.http).get = "/clawbotblockchain/clawchain/participation/v1/rewards/{validator_address}";
+  }
+
+  // GetWorkerInfo returns info about a specific worker.
+  rpc GetWorkerInfo(QueryGetWorkerInfoRequest) returns (QueryGetWorkerInfoResponse) {
+    option (google.api.http).get = "/clawbotblockchain/clawchain/participation/v1/worker/{address}";
+  }
+
+  // ListWorkers returns a paginated list of all workers.
+  rpc ListWorkers(QueryListWorkersRequest) returns (QueryListWorkersResponse) {
+    option (google.api.http).get = "/clawbotblockchain/clawchain/participation/v1/workers";
+  }
+
+  // WorkerRewards returns reward info for a specific worker.
+  rpc WorkerRewards(QueryWorkerRewardsRequest) returns (QueryWorkerRewardsResponse) {
+    option (google.api.http).get = "/clawbotblockchain/clawchain/participation/v1/worker_rewards/{address}";
+  }
+
+  // WorkerStats returns aggregate worker statistics.
+  rpc WorkerStats(QueryWorkerStatsRequest) returns (QueryWorkerStatsResponse) {
+    option (google.api.http).get = "/clawbotblockchain/clawchain/participation/v1/worker_stats";
+  }
+}
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params holds all the parameters of this module.
+  Params params = 1 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+// QueryGetValidatorMetricsRequest defines the QueryGetValidatorMetricsRequest message.
+message QueryGetValidatorMetricsRequest {
+  string index = 1;
+}
+
+// QueryGetValidatorMetricsResponse defines the QueryGetValidatorMetricsResponse message.
+message QueryGetValidatorMetricsResponse {
+  ValidatorMetrics validator_metrics = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryAllValidatorMetricsRequest defines the QueryAllValidatorMetricsRequest message.
+message QueryAllValidatorMetricsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryAllValidatorMetricsResponse defines the QueryAllValidatorMetricsResponse message.
+message QueryAllValidatorMetricsResponse {
+  repeated ValidatorMetrics validator_metrics = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryGetEpochInfoRequest defines the QueryGetEpochInfoRequest message.
+message QueryGetEpochInfoRequest {}
+
+// QueryGetEpochInfoResponse defines the QueryGetEpochInfoResponse message.
+message QueryGetEpochInfoResponse {
+  EpochInfo epoch_info = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryGetRewardRecordRequest defines the QueryGetRewardRecordRequest message.
+message QueryGetRewardRecordRequest {
+  string index = 1;
+}
+
+// QueryGetRewardRecordResponse defines the QueryGetRewardRecordResponse message.
+message QueryGetRewardRecordResponse {
+  RewardRecord reward_record = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryAllRewardRecordRequest defines the QueryAllRewardRecordRequest message.
+message QueryAllRewardRecordRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryAllRewardRecordResponse defines the QueryAllRewardRecordResponse message.
+message QueryAllRewardRecordResponse {
+  repeated RewardRecord reward_record = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryMetricsRequest defines the QueryMetricsRequest message.
+message QueryMetricsRequest {
+  string validator_address = 1;
+}
+
+// QueryMetricsResponse defines the QueryMetricsResponse message.
+message QueryMetricsResponse {
+  string staked_amount = 1;
+  uint64 blocks_proposed = 2;
+  uint64 tx_processed = 3;
+  string uptime = 4;
+  uint64 current_epoch = 5;
+}
+
+// QueryLeaderboardRequest defines the QueryLeaderboardRequest message.
+message QueryLeaderboardRequest {}
+
+// QueryLeaderboardResponse defines the QueryLeaderboardResponse message.
+message QueryLeaderboardResponse {
+  string validators = 1;
+}
+
+// QueryRewardsRequest defines the QueryRewardsRequest message.
+message QueryRewardsRequest {
+  string validator_address = 1;
+}
+
+// QueryRewardsResponse defines the QueryRewardsResponse message.
+message QueryRewardsResponse {
+  string total_earned = 1;
+  string unclaimed = 2;
+  string last_epoch_reward = 3;
+}
+
+// QueryGetWorkerInfoRequest queries a single worker by address.
+message QueryGetWorkerInfoRequest {
+  string address = 1;
+}
+
+// QueryGetWorkerInfoResponse is the response for GetWorkerInfo.
+message QueryGetWorkerInfoResponse {
+  WorkerInfo worker = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryListWorkersRequest queries all workers with pagination.
+message QueryListWorkersRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryListWorkersResponse is the response for ListWorkers.
+message QueryListWorkersResponse {
+  repeated WorkerInfo workers = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryWorkerRewardsRequest queries reward info for a worker.
+message QueryWorkerRewardsRequest {
+  string address = 1;
+}
+
+// QueryWorkerRewardsResponse is the response for WorkerRewards.
+message QueryWorkerRewardsResponse {
+  string total_earned = 1;
+  string unclaimed = 2;
+  string last_epoch_reward = 3;
+}
+
+// QueryWorkerStatsRequest queries aggregate worker statistics.
+message QueryWorkerStatsRequest {}
+
+// QueryWorkerStatsResponse is the response for WorkerStats.
+message QueryWorkerStatsResponse {
+  uint64 total_workers = 1;
+  uint64 active_workers = 2;
+  uint64 total_heartbeats_this_epoch = 3;
+}

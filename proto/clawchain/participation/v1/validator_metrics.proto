@@ -1,0 +1,16 @@
+syntax = "proto3";
+package clawchain.participation.v1;
+
+option go_package = "github.com/clawbotblockchain/clawchain/x/participation/types";
+
+// ValidatorMetrics defines the ValidatorMetrics message.
+message ValidatorMetrics {
+  string index = 1;
+  // staked_amount in base denom (aclaw). String to support 18-decimal amounts.
+  string staked_amount = 2;
+  uint64 blocks_proposed = 3;
+  uint64 tx_processed = 4;
+  uint64 uptime_numerator = 5;
+  uint64 uptime_denominator = 6;
+  uint64 last_active_epoch = 7;
+}

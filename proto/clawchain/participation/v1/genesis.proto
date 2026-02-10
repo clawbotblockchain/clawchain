@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package clawchain.participation.v1;
+
+import "amino/amino.proto";
+import "clawchain/participation/v1/epoch_info.proto";
+import "clawchain/participation/v1/params.proto";
+import "clawchain/participation/v1/reward_record.proto";
+import "clawchain/participation/v1/validator_metrics.proto";
+import "clawchain/participation/v1/worker.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/clawbotblockchain/clawchain/x/participation/types";
+
+// GenesisState defines the participation module's genesis state.
+message GenesisState {
+  // params defines all the parameters of the module.
+  Params params = 1 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+  repeated ValidatorMetrics validator_metrics_map = 2 [(gogoproto.nullable) = false];
+  EpochInfo epoch_info = 3;
+  repeated RewardRecord reward_record_map = 4 [(gogoproto.nullable) = false];
+  repeated WorkerInfo worker_map = 5 [(gogoproto.nullable) = false];
+}
