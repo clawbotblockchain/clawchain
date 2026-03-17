@@ -62,6 +62,8 @@ func (AppModule) Name() string {
 func (AppModule) RegisterLegacyAminoCodec(*codec.LegacyAmino) {}
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the module.
+// Note: Only Query services are exposed via gRPC-gateway. Msg services (transactions)
+// must be submitted as signed transactions via /cosmos/tx/v1beta1/txs.
 func (AppModule) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
 	if err := types.RegisterQueryHandlerClient(clientCtx.CmdContext, mux, types.NewQueryClient(clientCtx)); err != nil {
 		panic(err)
