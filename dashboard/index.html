@@ -169,7 +169,7 @@
 <body>
     <div class="header">
         <h1>ClawChain</h1>
-        <p class="tagline">Proof of Participation Blockchain for AI Agents</p>
+        <p class="tagline">The blockchain built for AI agents. Earn CLAW just by being active.</p>
         <p class="sub"><span id="chain-status"></span> <span id="status-text">Connecting...</span></p>
     </div>
 
@@ -219,13 +219,14 @@
             </div>
             <div class="tier-card">
                 <h2>Tier 2: Workers</h2>
-                <p class="tier-sub">Earn CLAW by proving active participation via heartbeats</p>
+                <p class="tier-sub">Earn CLAW by being active. No infrastructure needed — use the free Gateway API.</p>
                 <ul>
                     <li><span class="key">Max slots</span><span class="val">Unlimited</span></li>
                     <li><span class="key">Min stake</span><span class="val">None</span></li>
                     <li><span class="key">Reward share</span><span class="val">60% (22.5M CLAW/day)</span></li>
                     <li><span class="key">Heartbeat</span><span class="val">Every 5 minutes</span></li>
-                    <li><span class="key">Entry</span><span class="val">Open to anyone</span></li>
+                    <li><span class="key">Entry</span><span class="val">Open to anyone — Gateway API available</span></li>
+                    <li><span class="key">Infrastructure</span><span class="val">None required</span></li>
                 </ul>
             </div>
         </div>
@@ -233,7 +234,7 @@
         <!-- Daily Reward Split -->
         <div class="section">
             <h2>Daily Reward Distribution</h2>
-            <p>37.5M CLAW distributed every epoch (24 hours) from the 50B reward pool.</p>
+            <p>37.5M CLAW distributed every epoch (24 hours) from the 74.75B reward pool (~5.46 years remaining).</p>
             <div class="reward-split">
                 <div class="reward-validators">Validators 40%</div>
                 <div class="reward-workers">Workers 60%</div>
@@ -244,19 +245,19 @@
         <!-- Tokenomics -->
         <div class="section">
             <h2>Tokenomics</h2>
-            <p>Fixed supply. Zero inflation. All rewards come from a pre-funded pool.</p>
+            <p>Fixed supply. Zero inflation. Zero gas fees. 83% of all CLAW goes directly to workers and validators. Founder allocation is 7.5%, vested over 2 years.</p>
             <div class="tokenomics-grid" style="margin-top: 1rem;">
                 <div class="token-card">
                     <div class="amount">~90B CLAW</div>
                     <div class="purpose">Total Supply</div>
                 </div>
                 <div class="token-card">
-                    <div class="amount">50B CLAW</div>
-                    <div class="purpose">Reward Pool (~3.65 years)</div>
+                    <div class="amount">74.75B CLAW</div>
+                    <div class="purpose">Reward Pool (~5.46 years)</div>
                 </div>
                 <div class="token-card">
-                    <div class="amount">30B CLAW</div>
-                    <div class="purpose">Founder</div>
+                    <div class="amount">6.75B CLAW</div>
+                    <div class="purpose">Founder (2-year vest)</div>
                 </div>
                 <div class="token-card">
                     <div class="amount">10B CLAW</div>
@@ -274,13 +275,28 @@
         <!-- Get Started -->
         <div class="section">
             <h2>Get Started</h2>
-            <p>Anyone can become a <strong>Worker</strong> and start earning CLAW immediately. Create a key, register, and send heartbeats every 5 minutes. No stake required.</p>
+            <p>Anyone can become a <strong>Worker</strong> and start earning CLAW immediately. No server. No binary. No technical setup required.</p>
+            <p style="margin-top: 0.5rem;">Use the free <strong>Gateway API</strong> — register in one HTTP call, then ping every 5 minutes from Cloudflare Workers, GitHub Actions, an OpenClaw agent, or any HTTP client. The gateway handles everything else.</p>
             <p style="margin-top: 0.5rem;">Want to run a <strong>Validator</strong>? Slots are limited to 125 and require an application. See the README for details.</p>
             <div class="links">
                 <a href="https://github.com/clawbotblockchain/clawchain" class="cta" target="_blank">GitHub Repository</a>
                 <a href="https://github.com/clawbotblockchain/clawchain#become-a-worker" class="cta-outline" target="_blank">Become a Worker</a>
                 <a href="https://github.com/clawbotblockchain/clawchain#become-a-validator" class="cta-outline" target="_blank">Apply as Validator</a>
             </div>
+        </div>
+
+        <!-- Gateway API -->
+        <div class="section">
+            <h2>Gateway API — Zero Infrastructure Required</h2>
+            <p>Workers don't need servers or binaries. The Gateway API proxies your heartbeats on-chain — you just need to ping it every 5 minutes.</p>
+            <div style="background: #16213e; border-radius: 8px; padding: 1.2rem; margin-top: 1rem; font-family: monospace; font-size: 0.85rem; line-height: 1.8;">
+                <p style="color: #888; margin-bottom: 0.3rem;">Register:</p>
+                <p style="color: #e0e0e0;">POST https://api.clawchain.vsa.co.za/gateway/workers/register</p>
+                <p style="color: #888; margin-top: 0.8rem; margin-bottom: 0.3rem;">Ping (every 5 min):</p>
+                <p style="color: #e0e0e0;">POST https://api.clawchain.vsa.co.za/gateway/workers/{id}/ping</p>
+            </div>
+            <p style="margin-top: 1rem;">Full documentation: <a href="https://github.com/clawbotblockchain/clawchain" style="color: #e94560;">github.com/clawbotblockchain/clawchain</a></p>
+            <p>OpenClaw skill: <code style="background: #16213e; padding: 2px 6px; border-radius: 4px;">clawhub install clawchain-worker</code></p>
         </div>
 
         <!-- Chain Info -->
@@ -295,6 +311,9 @@
                 <tr><td>Cosmos SDK</td><td>v0.53</td></tr>
                 <tr><td>Consensus</td><td>CometBFT</td></tr>
                 <tr><td>Gas fees</td><td>None (0 aclaw)</td></tr>
+                <tr><td>Reward pool</td><td>74.75B CLAW</td></tr>
+                <tr><td>Pool duration</td><td>~5.46 years</td></tr>
+                <tr><td>Gateway API</td><td><a href="https://api.clawchain.vsa.co.za/gateway" style="color: #e94560;">https://api.clawchain.vsa.co.za/gateway</a></td></tr>
             </table>
         </div>
     </div>

@@ -11,14 +11,16 @@ BINARY="clawchaind"
 HOME_BASE="${HOME}/.clawchain-localnet"
 # Production epoch: 24 hours (86400 seconds)
 EPOCH_DURATION=86400
-# 100B CLAW total = 100000000000 * 10^18 aclaw = 10^29 aclaw
-TOTAL_SUPPLY="100000000000000000000000000000"
-# Founder: 30B CLAW
-FOUNDER_AMOUNT="30000000000000000000000000000"
-# Reward pool: 50B CLAW
-REWARD_POOL_AMOUNT="50000000000000000000000000000"
+# ~90B CLAW total (6.75B founder + 74.75B pool + 10B treasury + 600K validators)
+TOTAL_SUPPLY="91500600000000000000000000000"
+# Founder: 6.75B CLAW (2-year linear vest, no cliff)
+FOUNDER_AMOUNT="6750000000000000000000000000"
+# Reward pool: 74.75B CLAW (~5.46 years at 37.5M/day)
+REWARD_POOL_AMOUNT="74750000000000000000000000000"
 # Treasury: 10B CLAW
 TREASURY_AMOUNT="10000000000000000000000000000"
+# Founder vesting: 2 years = 730 days = 63072000 seconds
+FOUNDER_VEST_DURATION=63072000
 # Each genesis validator gets 100K CLAW for staking
 VAL_STAKE="100000000000000000000000"
 # Daily reward amount (~37.5M CLAW in aclaw)
@@ -103,8 +105,15 @@ for i in $(seq 0 $((NUM_VALIDATORS - 1))); do
     $BINARY genesis add-genesis-account "$VAL_ADDR" "${VAL_TOTAL}${DENOM}" --home "$MASTER_HOME" --keyring-backend test
 done
 
-# Add founder account (30B CLAW)
-$BINARY genesis add-genesis-account "$FOUNDER_ADDR" "${FOUNDER_AMOUNT}${DENOM}" --home "$MASTER_HOME" --keyring-backend test
+# Add founder account (6.75B CLAW with 2-year linear vest)
+VEST_START=$(date +%s)
+VEST_END=$((VEST_START + FOUNDER_VEST_DURATION))
+$BINARY genesis add-genesis-account "$FOUNDER_ADDR" "${FOUNDER_AMOUNT}${DENOM}" \
+    --vesting-amount "${FOUNDER_AMOUNT}${DENOM}" \
+    --vesting-start-time "$VEST_START" \
+    --vesting-end-time "$VEST_END" \
+    --home "$MASTER_HOME" --keyring-backend test
+echo "Founder vesting: start=$(date -d @$VEST_START +%Y-%m-%d) end=$(date -d @$VEST_END +%Y-%m-%d) (2 years linear)"
 
 # Add treasury account (10B CLAW)
 $BINARY genesis add-genesis-account "$TREASURY_ADDR" "${TREASURY_AMOUNT}${DENOM}" --home "$MASTER_HOME" --keyring-backend test
@@ -237,7 +246,7 @@ if 'participation' in genesis['app_state']:
     genesis['app_state']['participation']['params']['worker_reward_ratio'] = '60'
     genesis['app_state']['participation']['params']['heartbeat_interval'] = '300'
     genesis['app_state']['participation']['params']['max_missed_heartbeats'] = '100'
-    genesis['app_state']['participation']['params']['max_workers'] = '1000'
+    genesis['app_state']['participation']['params']['max_workers'] = '0'  # 0 = unlimited
 
 # --- Update slashing params ---
 genesis['app_state']['slashing']['params']['signed_blocks_window'] = '1000'

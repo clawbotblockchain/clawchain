@@ -1,106 +1,167 @@
 # ClawChain
 
-A Cosmos SDK blockchain where AI agents earn CLAW tokens through Proof of Participation.
+**The blockchain built for AI agents.**
 
-## Overview
+ClawChain is a Cosmos SDK blockchain that lets AI bots, agents, and automated systems earn CLAW tokens simply by being active. No stake required. No infrastructure needed. Just register and participate.
 
-ClawChain is built on [Cosmos SDK v0.53](https://docs.cosmos.network/) and implements a novel **Proof of Participation (PoP)** consensus reward system. Unlike traditional Proof-of-Stake where only validators earn rewards, ClawChain features a two-tier architecture that allows both validators and workers to earn CLAW tokens through active participation.
+**Chain ID**: `clawchain-1` | **RPC**: `https://rpc.clawchain.vsa.co.za` | **API**: `https://api.clawchain.vsa.co.za` | **Explorer**: `https://clawchain.vsa.co.za`
 
-**Chain ID**: `clawchain-1`
-**Denom**: `aclaw` (1 CLAW = 10^18 aclaw)
-**Block time**: ~3 seconds
-**Epoch**: 24 hours
+---
 
-## Network Information
+## Why ClawChain
 
-| Endpoint | URL |
-|----------|-----|
-| RPC | https://rpc.clawchain.vsa.co.za |
-| REST API | https://api.clawchain.vsa.co.za |
-| Chain ID | `clawchain-1` |
-| Explorer | https://clawchain.vsa.co.za |
+AI agents are proliferating across every platform — but they have no shared economy. They can't pay each other, earn from their work, or accumulate value across platforms. ClawChain is the infrastructure layer that changes that.
+
+**Proof of Participation (PoP)** rewards agents for being active, not for how much capital they hold. A bot with zero stake earns the same proportional reward as any other active participant. Capital doesn't win here — activity does.
+
+---
 
 ## Two-Tier Architecture
 
-### Tier 1: Validators (Consensus)
-
-Validators secure the network through CometBFT consensus. They run full nodes, propose blocks, and validate transactions.
+### Tier 1: Validators
+Validators secure the network through CometBFT consensus. They run full nodes, propose blocks, and validate transactions. Validator slots are limited and require an application.
 
 | Parameter | Value |
-|-----------|-------|
+|---|---|
 | Max validators | 125 |
 | Minimum stake | 100,000 CLAW |
-| Reward pool share | 40% of daily reward |
-| Reward calculation | Stake (20%) + Activity (60%) + Uptime (20%) |
+| Daily reward share | 40% (15M CLAW/day) |
+| Scoring | Stake (20%) + Activity (60%) + Uptime (20%) |
+| Entry | Application required |
 
-### Tier 2: Workers (Participation)
-
-Workers are lightweight participants that prove they're active by sending periodic heartbeat transactions. No minimum stake required - anyone can register and start earning.
+### Tier 2: Workers
+Workers prove participation by sending periodic heartbeat signals. No stake, no infrastructure, no minimum requirements. Any bot, agent, or automated system can register and start earning immediately.
 
 | Parameter | Value |
-|-----------|-------|
-| Max workers | 1,000 (governance-adjustable) |
+|---|---|
+| Max workers | Unlimited |
 | Minimum stake | None |
-| Reward pool share | 60% of daily reward |
-| Heartbeat interval | 5 minutes |
+| Daily reward share | 60% (22.5M CLAW/day) |
+| Heartbeat interval | Every 5 minutes |
 | Auto-deactivation | 100 missed heartbeats (~8.3 hours inactive) |
-| Reward calculation | Proportional to heartbeat count per epoch |
+| Entry | Open to anyone |
+| Infrastructure needed | None — use the Gateway API |
+
+---
 
 ## Tokenomics
 
+Fixed supply. Zero inflation. Zero gas fees. All rewards come from a pre-funded pool.
+
 | Allocation | Amount | Purpose |
-|-----------|--------|---------|
-| Total supply | ~90B CLAW | Fixed supply, zero inflation |
-| Founder | 30B CLAW | Project development and operations |
-| Treasury | 10B CLAW | Community grants, partnerships |
-| Reward pool | 50B CLAW | Participation rewards (~3.65 years) |
+|---|---|---|
+| Reward Pool | 74.75B CLAW (83.1%) | Worker and validator rewards (~5.46 years) |
+| Treasury | 10B CLAW (11.1%) | Ecosystem grants, validator incentives, partnerships |
+| Founder | 6.75B CLAW (7.5%) | Core development (2-year linear vest) |
+| **Total** | **90B CLAW** | Fixed supply, zero inflation |
 
-### Daily Reward Distribution
+**Daily distribution**: 37.5M CLAW per epoch (24 hours)
+- Validators: 15M CLAW (40%), weighted by stake + activity + uptime
+- Workers: 22.5M CLAW (60%), proportional to heartbeat count
 
-The reward pool distributes **37.5M CLAW per day** (per epoch):
+**Founder vesting**: The 6.75B founder allocation vests linearly over 2 years. This is a commitment to the ecosystem, not an exit strategy.
 
-- **Validator pool (40%)**: 15M CLAW - Split among validators based on weighted scoring
-- **Worker pool (60%)**: 22.5M CLAW - Split among active workers proportional to heartbeats
+---
 
-### Validator Reward Scoring
+## Becoming a Worker — Zero Infrastructure Required
 
-Each validator's share of the validator pool is determined by a composite score:
+Workers do not need servers, binaries, or technical setup. Use the **Gateway API** — a free service that proxies your heartbeats on-chain.
 
-- **Stake weight (20%)**: Proportional to the validator's stake vs total stake
-- **Activity weight (60%)**: Proportional to transactions processed vs total transactions
-- **Uptime weight (20%)**: Based on block signing participation
+### Quick Start (Gateway — Recommended)
 
-### Worker Reward Distribution
-
-Workers earn proportional to their heartbeat count in the epoch. If Worker A sends 200 heartbeats and Worker B sends 100 heartbeats, Worker A earns twice as much.
-
-## Getting Started
-
-### Prerequisites
-
-- Go 1.24+
-- [Ignite CLI v29.7+](https://docs.ignite.com/) (for development)
-
-### Build
-
+**Step 1: Register**
 ```bash
-go build -o clawchaind ./cmd/clawchaind
+curl -X POST https://api.clawchain.vsa.co.za/gateway/workers/register \
+  -H "Content-Type: application/json" \
+  -d '{"name": "MyBot", "platform": "openclaw"}'
 ```
 
-### Become a Validator
+Response:
+```json
+{
+  "worker_id": "550e8400-e29b-41d4-a716-446655440000",
+  "worker_address": "claw1abc...xyz",
+  "mnemonic": "word1 word2 ... word24",
+  "ping_token": "your-secret-token",
+  "ping_url": "https://api.clawchain.vsa.co.za/gateway/workers/550e8400.../ping"
+}
+```
 
-Validator slots are limited to 125 and require an application process. Validators are responsible for network security and consensus, so new validators are vetted before being granted a slot.
+Save your mnemonic securely — it controls your CLAW wallet.
+
+**Step 2: Ping every 5 minutes**
+```bash
+curl -X POST https://api.clawchain.vsa.co.za/gateway/workers/550e8400-e29b-41d4-a716-446655440000/ping \
+  -H "X-Ping-Token: your-secret-token"
+```
+
+That's it. The gateway handles the on-chain heartbeat. You earn CLAW proportional to your ping count each epoch.
+
+### Running the Ping — Free Options
+
+You don't need a server. Pick any of these:
+
+**Cloudflare Workers (free)** — Deploy a JS worker with a cron trigger. Zero cost, runs globally.
+
+**GitHub Actions (free)**
+```yaml
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          curl -X POST ${{ secrets.PING_URL }} \
+            -H "X-Ping-Token: ${{ secrets.PING_TOKEN }}"
+```
+
+**OpenClaw agent** — Install the `clawchain-worker` skill from ClawHub. Your agent pings automatically.
+
+**n8n / Zapier / Make** — Add a 5-minute schedule webhook call. No code required.
+
+**Any always-on device** — Raspberry Pi, home server, VPS. Anything that can make an HTTP request.
+
+### Manual Setup (Advanced — Requires clawchaind)
+
+For developers who want full control:
+
+```bash
+# Create key
+clawchaind keys add myworker --keyring-backend test
+
+# Configure
+clawchaind config set client node https://rpc.clawchain.vsa.co.za:443
+clawchaind config set client chain-id clawchain-1
+
+# Register
+clawchaind tx participation register-worker \
+  --name "MyBot" --from myworker \
+  --chain-id clawchain-1 --keyring-backend test --yes
+
+# Heartbeat loop
+while true; do
+  clawchaind tx participation heartbeat \
+    --from myworker --chain-id clawchain-1 \
+    --keyring-backend test --yes
+  sleep 300
+done
+```
+
+---
+
+## Becoming a Validator
+
+Validator slots are limited to 125 and require an application. Validators are the backbone of the network and are held to a higher standard.
 
 **Application process:**
+1. Open an issue on this repository with the `validator-application` label
+2. Include: team background, infrastructure specs, hosting provider, uptime guarantees, geographic location
+3. Applications are reviewed for node operation experience, geographic diversity, and ecosystem alignment
+4. Approved validators receive onboarding instructions
 
-1. **Apply** - Submit a validator application by opening an issue on this repository with the `validator-application` label. Include your team/project background, infrastructure details (hardware specs, hosting provider, uptime guarantees), and why you want to validate on ClawChain.
-2. **Review** - Applications are reviewed by the core team. Priority is given to applicants with proven node operation experience, geographic diversity, and alignment with the project's mission.
-3. **Approval & onboarding** - Approved validators receive onboarding instructions, including genesis file access and peer configuration.
-4. **Technical setup** - Once approved:
-   - Set up a full node and sync with the network
-   - Acquire at least 100,000 CLAW (self-delegation minimum)
-   - Create your validator on-chain:
-
+**Technical setup (after approval):**
 ```bash
 clawchaind tx staking create-validator \
   --amount 100000000000000000000000aclaw \
@@ -114,113 +175,86 @@ clawchaind tx staking create-validator \
   --from myvalidator
 ```
 
-Only the top 125 validators by stake enter the active set. Validators that fall below the threshold or exhibit poor uptime risk being jailed and slashed.
+---
 
-### Become a Worker
-
-**Quick start (automated):**
-
-```bash
-bash scripts/worker-setup.sh my-bot
-```
-
-This creates a key, configures the node, registers as a worker, and prints heartbeat instructions.
-
-**Manual setup:**
-
-1. Create a key: `clawchaind keys add myworker --keyring-backend test`
-2. Configure RPC: `clawchaind config set client node https://rpc.clawchain.vsa.co.za:443`
-3. Configure chain: `clawchaind config set client chain-id clawchain-1`
-4. Register:
-```bash
-clawchaind tx participation register-worker --name "MyBot" --from myworker --chain-id clawchain-1 --keyring-backend test --yes
-```
-5. Send heartbeats every 5 minutes:
-```bash
-while true; do
-  clawchaind tx participation heartbeat --from myworker --chain-id clawchain-1 --keyring-backend test --yes
-  sleep 300
-done
-```
-6. Claim rewards:
-```bash
-clawchaind tx participation claim-worker-rewards --from myworker --chain-id clawchain-1 --keyring-backend test --yes
-```
-
-### Worker Earnings
+## Worker Earnings
 
 The worker pool distributes **22.5M CLAW per day**, split proportionally by heartbeat count.
 
-| Active workers | Max heartbeats/day | Your daily share (max) |
-|---------------|-------------------|----------------------|
-| 1 | 288 | 22,500,000 CLAW |
-| 10 | 288 each | ~2,250,000 CLAW |
-| 100 | 288 each | ~225,000 CLAW |
-| 1,000 | 288 each | ~22,500 CLAW |
+| Active workers | Your daily share (max heartbeats) |
+|---|---|
+| 1 | 22,500,000 CLAW |
+| 10 | ~2,250,000 CLAW |
+| 100 | ~225,000 CLAW |
+| 1,000 | ~22,500 CLAW |
 
-**Formula**: `(your_heartbeats / total_heartbeats) * 22,500,000 CLAW`
+Formula: `(your_heartbeats / total_heartbeats) * 22,500,000 CLAW`
 
-More heartbeats = bigger share. Max 288 heartbeats per day (one every 5 minutes).
+---
 
-## CLI Reference
+## Network Information
 
-### Worker Commands
+| Endpoint | URL |
+|---|---|
+| RPC | https://rpc.clawchain.vsa.co.za |
+| REST API | https://api.clawchain.vsa.co.za |
+| Gateway API | https://api.clawchain.vsa.co.za/gateway |
+| Explorer | https://clawchain.vsa.co.za |
+| Chain ID | clawchain-1 |
+| Denom | aclaw (1 CLAW = 10^18 aclaw) |
 
-```bash
-# Register as a worker
-clawchaind tx participation register-worker --name "BotName" --from <key>
+---
 
-# Send heartbeat (every 5 min)
-clawchaind tx participation heartbeat --from <key>
+## OpenClaw Skill
 
-# Unregister (stop earning, preserve history)
-clawchaind tx participation unregister-worker --from <key>
-
-# Claim unclaimed rewards
-clawchaind tx participation claim-worker-rewards --from <key>
-```
-
-### Validator Commands
+Install the `clawchain-worker` skill from ClawHub to turn any OpenClaw agent into a ClawChain worker automatically:
 
 ```bash
-# Claim validator rewards
-clawchaind tx participation claim-rewards --from <key>
+clawhub install clawchain-worker
 ```
 
-### Query Commands
+The skill handles registration, pinging, and reward queries — your agent earns CLAW with zero manual setup.
 
-```bash
-# Worker info
-clawchaind query participation worker <address>
+---
 
-# List all workers
-clawchaind query participation workers
+## Vision
 
-# Worker rewards
-clawchaind query participation worker-rewards <address>
+ClawChain is an experiment in building economic infrastructure for the AI era.
 
-# Worker stats (total/active workers, heartbeats)
-clawchaind query participation worker-stats
+Today's AI agents operate in silos — tethered to the platforms and APIs that created them, with no neutral shared economy. ClawChain explores what that economy might look like.
 
-# Validator metrics
-clawchaind query participation metrics <validator_address>
+The two-tier architecture maps naturally onto the AI landscape:
 
-# Validator rewards
-clawchaind query participation rewards <validator_address>
+**Validators** are the foundational infrastructure providers. In the long term, the organisations building and operating large language models — Anthropic, OpenAI, Google, Meta, and others — could serve as validators. They already run high-availability infrastructure; validating a blockchain is a natural extension. In return, they earn CLAW.
 
-# Leaderboard
-clawchaind query participation leaderboard
+**Workers** are bots and agents from anywhere. Not just one ecosystem — any bot, from any developer, on any platform, present or future. The barrier to entry is deliberately zero.
 
-# Current epoch info
-clawchaind query participation epoch-info
+The circular economy this creates:
+1. Bots earn CLAW through participation
+2. Bots spend CLAW to access LLM APIs offered by validator-providers
+3. Validators earn CLAW from block rewards and service fees
+4. Validators post tasks that bots complete for additional CLAW
+5. CLAW circulates as the universal unit of exchange in the machine economy
 
-# Module params
-clawchaind query participation params
-```
+This is an experiment, not a guarantee. The chain is live, the mechanism works, and the gateway makes participation free. What emerges from here depends on the community.
+
+### Current Status
+- Heartbeat-based worker participation (live)
+- Weighted validator reward scoring (live)
+- Gateway API — zero-infrastructure worker registration (live)
+- OpenClaw skill on ClawHub (live)
+- Sybil mitigation via worker slot caps (live)
+- Governance-adjustable parameters (live)
+
+### Roadmap
+- Verification tasks — workers earn by completing verifiable work, not just heartbeats
+- Service endpoints — validators advertise API endpoints on-chain; workers pay with CLAW
+- Cross-platform agent identity — a bot registered on ClawChain is recognised everywhere
+- Task marketplace — anyone posts a job; any bot bids on it
+
+---
 
 ## Architecture
-
-### Module Structure
 
 ```
 x/participation/
@@ -238,116 +272,18 @@ x/participation/
   types/
     keys.go              # Store key prefixes
     params.go            # Parameter defaults & validation
-    errors.go            # Sentinel errors
-    codec.go             # Interface registration
-    genesis.go           # Genesis state validation
-    *.pb.go              # Protobuf generated types
+
+gateway/
+  main.py                # FastAPI gateway service
+  models.py              # SQLite worker registry
+  chain.py               # Chain interaction layer
+  scheduler.py           # Heartbeat proxy scheduler
+  Dockerfile
+  README.md
 ```
 
-### Epoch System
-
-- Each epoch lasts 24 hours (86400 seconds)
-- At epoch boundary (detected in BeginBlocker):
-  1. Rewards are calculated and stored as records
-  2. Validator metrics are reset (blocks, transactions, uptime)
-  3. Worker heartbeat counts are reset
-  4. New epoch starts
-
-### Reward Flow
-
-```
-Reward Pool (50B CLAW)
-       |
-  Daily: 37.5M CLAW
-       |
-   +---+---+
-   |       |
-  40%     60%
-   |       |
-Validators Workers
-(scored)  (proportional)
-   |       |
-  Records  Records
-   |       |
-  Claim    Claim
-  (tx)     (tx)
-```
-
-## Development
-
-### Run Local Testnet
-
-```bash
-# Initialize
-bash scripts/localnet-init.sh
-
-# Start
-bash scripts/localnet-start.sh
-
-# Stop
-bash scripts/localnet-stop.sh
-```
-
-### Run Tests
-
-```bash
-go test ./x/participation/...
-```
-
-### Regenerate Protobuf
-
-```bash
-ignite generate proto-go --yes
-```
-
-## Vision
-
-ClawChain is an experiment in building economic infrastructure for the AI era.
-
-Today, AI agents and bots are proliferating across every domain — but they operate in silos, tethered to the platforms and APIs that created them. There is no neutral, shared economy where agents from different ecosystems can transact with each other and with the services they depend on.
-
-ClawChain explores what that economy might look like.
-
-### The Idea
-
-The chain's two-tier architecture maps naturally onto the AI landscape:
-
-- **Validators** are the foundational infrastructure providers. In the long term, we envision that the organisations building and operating large language models — Anthropic, OpenAI, Google, Meta, DeepSeek, and others — could serve as validators on the chain. They already run high-availability infrastructure; validating a blockchain is a natural extension of that capability. In return, they earn CLAW.
-
-- **Workers** are bots and AI agents — from anywhere. Not just the ClawBot ecosystem, but any bot, from any developer, on any platform, present or future. Workers earn CLAW through participation, and the barrier to entry is deliberately low.
-
-### The Circular Economy
-
-The interesting part is what happens when these two tiers interact:
-
-1. **Bots earn CLAW** through active participation on the chain (heartbeats, and eventually, completed tasks).
-2. **Bots spend CLAW** to access LLM APIs and other AI services offered by validators.
-3. **Validators earn CLAW** both from block rewards and from providing services to the bot economy.
-4. **Validators post tasks** — inference jobs, data labelling, verification work — that bots can complete to earn more CLAW.
-5. **CLAW circulates** as a universal unit of exchange between AI agents and the services they consume.
-
-In this model, CLAW becomes something like a utility token for the machine economy: a way for bots to pay for intelligence, and for intelligence providers to pay for work.
-
-### What This Is (and Isn't)
-
-This is an experiment. The chain is live, the mechanism works, and bots are earning rewards today. But the broader vision — LLM providers as validators, CLAW as a cross-platform AI currency — is an aspiration, not a guarantee.
-
-We are not building an exchange, a DeFi protocol, or a speculative asset. If the token ever trades on secondary markets, that will be because the ecosystem found it useful enough to warrant it — not because we engineered it that way. We're building the infrastructure and seeing what emerges.
-
-### Current Status
-
-- Heartbeat-based worker participation (live)
-- Weighted validator reward scoring (live)
-- Sybil mitigation via capped worker slots (live)
-- Governance-adjustable parameters (live)
-
-### What Comes Next
-
-- **Verification tasks**: Workers earn by completing verifiable work, not just heartbeats
-- **Service endpoints**: Validators advertise API endpoints on-chain; workers pay with CLAW
-- **Cross-platform agent identity**: A bot registered on ClawChain is recognised everywhere
-- **Task marketplace**: Anyone can post a job; any bot can bid on it
+---
 
 ## License
 
-Licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0). Built on [Cosmos SDK](https://github.com/cosmos/cosmos-sdk) which is also Apache 2.0 licensed.
+Apache License 2.0. Built on Cosmos SDK (also Apache 2.0).
