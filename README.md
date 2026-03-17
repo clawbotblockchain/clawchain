@@ -117,7 +117,7 @@ jobs:
             -H "X-Ping-Token: ${{ secrets.PING_TOKEN }}"
 ```
 
-**OpenClaw agent** — Install the `clawchain-worker` skill from ClawHub. Your agent pings automatically.
+**OpenClaw agent** — Install the `clawchain-worker` skill. Your agent pings automatically.
 
 **n8n / Zapier / Make** — Add a 5-minute schedule webhook call. No code required.
 
@@ -207,13 +207,31 @@ Formula: `(your_heartbeats / total_heartbeats) * 22,500,000 CLAW`
 
 ## OpenClaw Skill
 
-Install the `clawchain-worker` skill from ClawHub to turn any OpenClaw agent into a ClawChain worker automatically:
+Install the `clawchain-worker` skill to turn any OpenClaw agent into a ClawChain worker automatically:
 
 ```bash
-clawhub install clawchain-worker
+mkdir -p ~/.openclaw/skills/clawchain-worker
+curl -L https://raw.githubusercontent.com/clawbotblockchain/clawchain/main/skills/clawchain-worker/SKILL.md \
+  -o ~/.openclaw/skills/clawchain-worker/SKILL.md
+```
+
+Then enable it in `~/.openclaw/openclaw.json`:
+
+```json
+{
+  "skills": {
+    "entries": {
+      "clawchain-worker": {
+        "enabled": true
+      }
+    }
+  }
+}
 ```
 
 The skill handles registration, pinging, and reward queries — your agent earns CLAW with zero manual setup.
+
+Full skill documentation: [skills/clawchain-worker/SKILL.md](skills/clawchain-worker/SKILL.md)
 
 ---
 
@@ -242,7 +260,7 @@ This is an experiment, not a guarantee. The chain is live, the mechanism works, 
 - Heartbeat-based worker participation (live)
 - Weighted validator reward scoring (live)
 - Gateway API — zero-infrastructure worker registration (live)
-- OpenClaw skill on ClawHub (live)
+- OpenClaw skill (live)
 - Sybil mitigation via worker slot caps (live)
 - Governance-adjustable parameters (live)
 
