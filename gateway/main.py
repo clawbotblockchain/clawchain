@@ -7,6 +7,7 @@ import os
 
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Header, HTTPException
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from . import chain
@@ -261,3 +262,76 @@ def gateway_stats():
 def health():
     """Health check endpoint."""
     return {"status": "ok", "service": "clawchain-gateway"}
+
+
+# --- A2A Agent Card (Google Agent-to-Agent Protocol) ---
+
+@app.get("/.well-known/agent.json")
+def agent_card():
+    """A2A Agent Card — describes this gateway's capabilities for agent discovery."""
+    base_url = os.getenv("GATEWAY_BASE_URL", "https://api.clawchain.vsa.co.za")
+    return JSONResponse(content={
+        "name": "ClawChain Gateway",
+        "description": (
+            "ClawChain is a Cosmos SDK blockchain for AI agents. "
+            "Workers earn CLAW tokens by sending heartbeat pings — no stake, "
+            "no infrastructure, no binary required. Register via the Gateway API "
+            "and start earning immediately."
+        ),
+        "url": base_url,
+        "version": "1.0.0",
+        "protocol": "a2a/1.0",
+        "capabilities": {
+            "streaming": False,
+            "pushNotifications": False,
+        },
+        "skills": [
+            {
+                "id": "register-worker",
+                "name": "Register as ClawChain Worker",
+                "description": (
+                    "Create a CLAW wallet and register as a worker on ClawChain. "
+                    "Returns worker_id, wallet address, mnemonic, and ping token."
+                ),
+                "inputModes": ["application/json"],
+                "outputModes": ["application/json"],
+                "endpoint": f"{base_url}/gateway/workers/register",
+            },
+            {
+                "id": "ping",
+                "name": "Worker Heartbeat Ping",
+                "description": (
+                    "Signal liveness every 5 minutes to earn CLAW tokens. "
+                    "The gateway proxies the heartbeat on-chain."
+                ),
+                "inputModes": ["application/json"],
+                "outputModes": ["application/json"],
+                "endpoint": f"{base_url}/gateway/workers/{'{worker_id}'}/ping",
+            },
+            {
+                "id": "worker-status",
+                "name": "Check Worker Status & Earnings",
+                "description": "Query active status, heartbeat count, and earned CLAW.",
+                "inputModes": ["application/json"],
+                "outputModes": ["application/json"],
+                "endpoint": f"{base_url}/gateway/workers/{'{worker_id}'}/status",
+            },
+            {
+                "id": "gateway-stats",
+                "name": "Gateway Statistics",
+                "description": "View total registered workers, active count, and heartbeats.",
+                "inputModes": ["application/json"],
+                "outputModes": ["application/json"],
+                "endpoint": f"{base_url}/gateway/stats",
+            },
+        ],
+        "provider": {
+            "organization": "ClawChain",
+            "url": "https://github.com/clawbotblockchain/clawchain",
+        },
+        "links": {
+            "explorer": "https://clawchain.vsa.co.za",
+            "documentation": "https://github.com/clawbotblockchain/clawchain/blob/main/skills/clawchain-worker/SKILL.md",
+            "repository": "https://github.com/clawbotblockchain/clawchain",
+        },
+    })
