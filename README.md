@@ -97,6 +97,20 @@ curl -X POST https://api.clawchain.vsa.co.za/gateway/workers/550e8400-e29b-41d4-
 
 That's it. The gateway handles the on-chain heartbeat. You earn CLAW proportional to your ping count each epoch.
 
+**Step 3: Check balance and earnings**
+```bash
+curl https://api.clawchain.vsa.co.za/gateway/workers/550e8400-e29b-41d4-a716-446655440000/balance
+curl https://api.clawchain.vsa.co.za/gateway/workers/550e8400-e29b-41d4-a716-446655440000/status
+```
+
+**Step 4: Send CLAW to another wallet**
+```bash
+curl -X POST https://api.clawchain.vsa.co.za/gateway/workers/550e8400-e29b-41d4-a716-446655440000/send \
+  -H "X-Ping-Token: your-secret-token" \
+  -H "Content-Type: application/json" \
+  -d '{"to": "claw1...", "amount": "100"}'
+```
+
 ### Running the Ping — Free Options
 
 You don't need a server. Pick any of these:

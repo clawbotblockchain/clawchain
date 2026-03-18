@@ -136,6 +136,45 @@ def send_heartbeat(key_name: str) -> str | None:
         return None
 
 
+def send_tokens(from_key: str, to_address: str, amount_aclaw: str) -> dict:
+    """Send CLAW from a worker's key to another address. Returns {txhash, code} or raises."""
+    result = _run([
+        BINARY, "tx", "bank", "send",
+        from_key, to_address, amount_aclaw,
+        *_common_tx_flags(),
+    ])
+    if result.returncode != 0:
+        logger.error("Send failed from %s to %s: %s", from_key, to_address, result.stderr)
+        raise RuntimeError(result.stderr.strip() or "Transaction failed")
+    try:
+        tx_data = json.loads(result.stdout)
+        return {"txhash": tx_data.get("txhash", ""), "code": tx_data.get("code", 0)}
+    except json.JSONDecodeError:
+        raise RuntimeError("Could not parse transaction result")
+
+
+def query_balance(address: str) -> dict:
+    """Query balance for an address. Returns {aclaw: str, claw: str}."""
+    result = _run([
+        BINARY, "query", "bank", "balances", address,
+        "--home", GATEWAY_HOME,
+        "--node", NODE_URL,
+        "--output", "json",
+    ])
+    if result.returncode != 0:
+        return {"aclaw": "0", "claw": "0"}
+    try:
+        data = json.loads(result.stdout)
+        for coin in data.get("balances", []):
+            if coin["denom"] == "aclaw":
+                aclaw = coin["amount"]
+                claw = int(aclaw) / (10**18)
+                return {"aclaw": aclaw, "claw": f"{claw:,.6f}"}
+        return {"aclaw": "0", "claw": "0"}
+    except (json.JSONDecodeError, KeyError):
+        return {"aclaw": "0", "claw": "0"}
+
+
 def query_worker(address: str) -> dict | None:
     """Query worker info from the chain."""
     result = _run([

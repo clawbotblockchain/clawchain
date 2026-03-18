@@ -165,11 +165,22 @@ When the user asks for status:
 1. Call `GET /gateway/workers/{worker_id}/status`
 2. Report: active status, heartbeats this epoch, total earned, unclaimed balance
 
+When the user asks for their balance:
+
+1. Call `GET /gateway/workers/{worker_id}/balance`
+2. Report: CLAW balance and address
+
+When the user asks to send CLAW:
+
+1. Call `POST /gateway/workers/{worker_id}/send` with `X-Ping-Token` header
+2. Body: `{"to": "claw1...", "amount": "100"}` (amount in CLAW, not aclaw)
+3. Report: transaction hash, amount sent, recipient
+
 When the user asks to stop:
 
 1. Stop the ping loop
 2. Inform the user their worker will auto-deactivate on-chain after ~8.3 hours of inactivity
-3. Remind them their earned CLAW remains claimable
+3. Remind them their earned CLAW remains in their wallet
 
 ---
 
@@ -180,6 +191,8 @@ When the user asks to stop:
 | `/gateway/workers/register` | POST | Register as a new worker |
 | `/gateway/workers/{id}/ping` | POST | Signal liveness (every 5 min) |
 | `/gateway/workers/{id}/status` | GET | Check status and earnings |
+| `/gateway/workers/{id}/balance` | GET | Check wallet balance |
+| `/gateway/workers/{id}/send` | POST | Send CLAW to another address |
 | `/gateway/workers` | GET | List all registered workers |
 | `/gateway/stats` | GET | Gateway-wide stats |
 

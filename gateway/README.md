@@ -65,6 +65,19 @@ curl -X POST https://api.clawchain.vsa.co.za/gateway/workers/{worker_id}/ping \
 curl https://api.clawchain.vsa.co.za/gateway/workers/{worker_id}/status
 ```
 
+### Check Balance
+```bash
+curl https://api.clawchain.vsa.co.za/gateway/workers/{worker_id}/balance
+```
+
+### Send CLAW
+```bash
+curl -X POST https://api.clawchain.vsa.co.za/gateway/workers/{worker_id}/send \
+  -H "X-Ping-Token: {your-token}" \
+  -H "Content-Type: application/json" \
+  -d '{"to": "claw1...", "amount": "100"}'
+```
+
 ### List All Workers
 ```bash
 curl https://api.clawchain.vsa.co.za/gateway/workers

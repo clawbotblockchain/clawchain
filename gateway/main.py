@@ -110,6 +110,26 @@ class WorkerListItem(BaseModel):
     heartbeats_sent: int
 
 
+class SendRequest(BaseModel):
+    to: str
+    amount: str  # Amount in CLAW (human-readable, e.g. "100" = 100 CLAW)
+    memo: str = ""
+
+
+class SendResponse(BaseModel):
+    txhash: str
+    from_address: str
+    to_address: str
+    amount: str
+    status: str
+
+
+class BalanceResponse(BaseModel):
+    address: str
+    balance_claw: str
+    balance_aclaw: str
+
+
 class GatewayStatsResponse(BaseModel):
     total_registered: int
     total_active: int
@@ -238,6 +258,67 @@ def worker_status(worker_id: str):
         )
 
 
+@app.post("/gateway/workers/{worker_id}/send", response_model=SendResponse)
+def send_claw(worker_id: str, req: SendRequest, x_ping_token: str = Header()):
+    """Send CLAW from a worker's wallet to another address."""
+    with SessionFactory() as db:
+        worker = db.query(Worker).filter(Worker.id == worker_id).first()
+        if not worker:
+            raise HTTPException(status_code=404, detail="Worker not found")
+
+        if worker.ping_token != x_ping_token:
+            raise HTTPException(status_code=403, detail="Invalid ping token")
+
+        # Validate recipient address
+        if not req.to.startswith("claw1"):
+            raise HTTPException(status_code=400, detail="Invalid recipient address — must start with claw1")
+
+        # Convert human CLAW to aclaw (18 decimals)
+        try:
+            claw_amount = float(req.amount)
+            if claw_amount <= 0:
+                raise ValueError()
+            aclaw_amount = int(claw_amount * (10**18))
+        except (ValueError, OverflowError):
+            raise HTTPException(status_code=400, detail="Invalid amount — must be a positive number")
+
+        amount_str = f"{aclaw_amount}aclaw"
+
+        try:
+            result = chain.send_tokens(worker.key_name, req.to, amount_str)
+        except RuntimeError as e:
+            raise HTTPException(status_code=500, detail=f"Transaction failed: {e}")
+
+        if result.get("code", 0) != 0:
+            raise HTTPException(status_code=500, detail=f"Transaction rejected by chain (code {result['code']})")
+
+        logger.info("Send: %s → %s (%s CLAW) tx=%s", worker.address, req.to, req.amount, result["txhash"])
+
+        return SendResponse(
+            txhash=result["txhash"],
+            from_address=worker.address,
+            to_address=req.to,
+            amount=f"{req.amount} CLAW",
+            status="success",
+        )
+
+
+@app.get("/gateway/workers/{worker_id}/balance", response_model=BalanceResponse)
+def worker_balance(worker_id: str):
+    """Get the CLAW balance for a worker's wallet."""
+    with SessionFactory() as db:
+        worker = db.query(Worker).filter(Worker.id == worker_id).first()
+        if not worker:
+            raise HTTPException(status_code=404, detail="Worker not found")
+
+    bal = chain.query_balance(worker.address)
+    return BalanceResponse(
+        address=worker.address,
+        balance_claw=f"{bal['claw']} CLAW",
+        balance_aclaw=bal["aclaw"],
+    )
+
+
 @app.get("/gateway/workers", response_model=list[WorkerListItem])
 def list_workers():
     """List all registered workers."""
@@ -337,6 +418,25 @@ def agent_card():
                 "inputModes": ["application/json"],
                 "outputModes": ["application/json"],
                 "endpoint": f"{base_url}/gateway/workers/{'{worker_id}'}/status",
+            },
+            {
+                "id": "send",
+                "name": "Send CLAW Tokens",
+                "description": (
+                    "Transfer CLAW from your worker wallet to any claw1... address. "
+                    "Requires X-Ping-Token header for authentication."
+                ),
+                "inputModes": ["application/json"],
+                "outputModes": ["application/json"],
+                "endpoint": f"{base_url}/gateway/workers/{'{worker_id}'}/send",
+            },
+            {
+                "id": "balance",
+                "name": "Check Wallet Balance",
+                "description": "Query the CLAW balance of a worker's wallet.",
+                "inputModes": ["application/json"],
+                "outputModes": ["application/json"],
+                "endpoint": f"{base_url}/gateway/workers/{'{worker_id}'}/balance",
             },
             {
                 "id": "gateway-stats",
