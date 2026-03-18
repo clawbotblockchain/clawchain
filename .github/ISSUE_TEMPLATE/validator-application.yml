@@ -12,10 +12,13 @@ body:
 
         **Process overview:**
         1. Submit this application
-        2. Team reviews your application
-        3. If approved, you receive 100,000 CLAW from the founder account
-        4. You set up your node and submit a create-validator transaction
-        5. Welcome to the active validator set
+        2. We review your application
+        3. If approved, we'll comment on this issue and contact you via your GitHub profile
+        4. You receive 100,000 CLAW from the founder account
+        5. You set up your node and submit a create-validator transaction
+        6. Welcome to the active validator set
+
+        **Note:** This application is publicly visible. Do not include private contact details — all communication happens through GitHub.
 
   - type: input
     id: moniker
@@ -125,24 +128,6 @@ body:
       placeholder: "claw1..."
     validations:
       required: true
-
-  - type: input
-    id: contact_email
-    attributes:
-      label: Contact Email
-      description: Email address for validator communications and alerts.
-      placeholder: "validator-ops@example.com"
-    validations:
-      required: true
-
-  - type: input
-    id: contact_telegram
-    attributes:
-      label: Contact (Telegram / Discord)
-      description: Telegram handle or Discord username for quick communication.
-      placeholder: "@your_handle"
-    validations:
-      required: false
 
   - type: checkboxes
     id: acknowledgements
