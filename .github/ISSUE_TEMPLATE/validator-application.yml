@@ -1,0 +1,160 @@
+name: Validator Application
+description: Apply to become a ClawChain validator
+title: "[Validator Application] <your-moniker>"
+labels: ["validator-application"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for your interest in becoming a ClawChain validator.
+
+        Please fill out this application completely. Incomplete applications will not be reviewed.
+
+        **Process overview:**
+        1. Submit this application
+        2. Team reviews your application
+        3. If approved, you receive 100,000 CLAW from the founder account
+        4. You set up your node and submit a create-validator transaction
+        5. Welcome to the active validator set
+
+  - type: input
+    id: moniker
+    attributes:
+      label: Validator Name (Moniker)
+      description: The name your validator will appear as on-chain and in the explorer.
+      placeholder: e.g., "my-validator-node"
+    validations:
+      required: true
+
+  - type: input
+    id: organization
+    attributes:
+      label: Team / Organization
+      description: Name of your team, company, or organization. Enter "Individual" if solo.
+      placeholder: e.g., "Acme Staking Ltd" or "Individual"
+    validations:
+      required: true
+
+  - type: textarea
+    id: background
+    attributes:
+      label: Organization Background
+      description: Tell us about your team and what you do. Include relevant links (website, social media, etc).
+      placeholder: |
+        Brief description of your organization, its mission, and why you want to validate on ClawChain.
+    validations:
+      required: true
+
+  - type: textarea
+    id: infrastructure
+    attributes:
+      label: Infrastructure Specifications
+      description: Provide details about the server(s) you will use.
+      value: |
+        - **CPU**:
+        - **RAM**:
+        - **Disk**:
+        - **Disk Type**: (SSD / NVMe / HDD)
+        - **Network Bandwidth**:
+        - **Network Speed**:
+    validations:
+      required: true
+
+  - type: input
+    id: hosting_provider
+    attributes:
+      label: Hosting Provider
+      description: Where will your validator node be hosted?
+      placeholder: e.g., "Hetzner", "AWS", "OVH", "Self-hosted datacenter"
+    validations:
+      required: true
+
+  - type: input
+    id: geographic_location
+    attributes:
+      label: Geographic Location
+      description: City and country where the server is located.
+      placeholder: e.g., "Frankfurt, Germany"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: uptime_guarantee
+    attributes:
+      label: Uptime Guarantee
+      description: What uptime percentage can you commit to?
+      options:
+        - "99.9% or higher"
+        - "99.5% - 99.9%"
+        - "99.0% - 99.5%"
+        - "Below 99.0%"
+    validations:
+      required: true
+
+  - type: textarea
+    id: node_experience
+    attributes:
+      label: Experience Running Blockchain Nodes
+      description: |
+        Describe your experience operating blockchain validators or full nodes.
+        Include which networks, how long, and any notable contributions.
+      placeholder: |
+        e.g., "Operated Cosmos Hub validator for 2 years (top 50 by stake).
+        Also run validators on Osmosis, Juno, and Akash."
+    validations:
+      required: true
+
+  - type: textarea
+    id: monitoring
+    attributes:
+      label: Monitoring and Alerting
+      description: Describe your monitoring setup and how you handle incidents.
+      placeholder: |
+        e.g., "Grafana + Prometheus dashboards, PagerDuty alerts for downtime,
+        24/7 on-call rotation with 15-minute response SLA."
+    validations:
+      required: false
+
+  - type: input
+    id: validator_address
+    attributes:
+      label: Validator Address
+      description: |
+        Your ClawChain address (starts with "claw"). Generate one with:
+        clawchaind keys add validator --keyring-backend file
+      placeholder: "claw1..."
+    validations:
+      required: true
+
+  - type: input
+    id: contact_email
+    attributes:
+      label: Contact Email
+      description: Email address for validator communications and alerts.
+      placeholder: "validator-ops@example.com"
+    validations:
+      required: true
+
+  - type: input
+    id: contact_telegram
+    attributes:
+      label: Contact (Telegram / Discord)
+      description: Telegram handle or Discord username for quick communication.
+      placeholder: "@your_handle"
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: acknowledgements
+    attributes:
+      label: Acknowledgements
+      description: Please confirm the following before submitting.
+      options:
+        - label: I understand that the minimum stake is 100,000 CLAW.
+          required: true
+        - label: I understand that I must maintain high uptime to avoid being jailed.
+          required: true
+        - label: I have read the [Validator Guide](../../docs/VALIDATOR_GUIDE.md).
+          required: true
+        - label: I agree to follow the ClawChain network rules and governance processes.
+          required: true

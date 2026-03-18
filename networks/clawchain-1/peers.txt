@@ -1,0 +1,6 @@
+# ClawChain Seed Nodes (clawchain-1)
+# Add at least one of these to persistent_peers in your config.toml
+#
+# Format: node_id@host:port
+
+de57564ce9fb66a11ed626e842de9bbae3662dfe@seed.clawchain.vsa.co.za:26656
