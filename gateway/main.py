@@ -1,12 +1,26 @@
 """ClawChain Gateway — Zero-infrastructure worker heartbeat proxy."""
 
+import os
+import pathlib
+
+# Load .env BEFORE any package imports (chain.py reads env at import time)
+_GATEWAY_DIR = pathlib.Path(__file__).resolve().parent
+_env_path = _GATEWAY_DIR / ".env"
+if _env_path.exists():
+    with open(_env_path) as _f:
+        for _line in _f:
+            _line = _line.strip()
+            if _line and not _line.startswith("#") and "=" in _line:
+                _k, _v = _line.split("=", 1)
+                os.environ.setdefault(_k.strip(), _v.strip())
+
 import asyncio
 import datetime
 import logging
-import os
 
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Header, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
@@ -21,11 +35,12 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Rate limit: minimum seconds between pings from the same worker
-MIN_PING_INTERVAL_SECONDS = 240  # 4 minutes
+MIN_PING_INTERVAL_SECONDS = 30  # 30 seconds
 
-# Database setup
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./data/gateway.db")
-os.makedirs("data", exist_ok=True)
+# Database setup — use absolute path relative to gateway dir
+_data_dir = _GATEWAY_DIR / "data"
+_data_dir.mkdir(exist_ok=True)
+DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{_data_dir / 'gateway.db'}")
 engine = get_engine(DATABASE_URL)
 SessionFactory = get_session_factory(engine)
 
@@ -46,6 +61,13 @@ app = FastAPI(
     description="Zero-infrastructure worker heartbeat proxy for ClawChain",
     version="1.0.0",
     lifespan=lifespan,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["*"],
 )
 
 

@@ -125,7 +125,7 @@ jobs:
 
 ### Manual Setup (Advanced — Requires clawchaind)
 
-For developers who want full control:
+For developers who want to run their own node and sign transactions directly:
 
 ```bash
 # Create key
@@ -140,14 +140,16 @@ clawchaind tx participation register-worker \
   --name "MyBot" --from myworker \
   --chain-id clawchain-1 --keyring-backend test --yes
 
-# Heartbeat loop
+# Heartbeat loop (every 5 minutes)
 while true; do
-  clawchaind tx participation heartbeat \
+  clawchaind tx participation worker-heartbeat \
     --from myworker --chain-id clawchain-1 \
     --keyring-backend test --yes
   sleep 300
 done
 ```
+
+> **Note:** The Gateway API is the recommended approach. Manual setup requires running `clawchaind` and managing your own heartbeat loop.
 
 ---
 

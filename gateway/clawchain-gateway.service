@@ -1,0 +1,17 @@
+[Unit]
+Description=ClawChain Gateway API
+After=network.target clawchaind.service
+Wants=clawchaind.service
+
+[Service]
+Type=simple
+User=claude
+Group=claude
+WorkingDirectory=/home/claude/projects/n8n/clawchain
+ExecStart=/home/claude/projects/n8n/clawchain/gateway/.venv/bin/uvicorn gateway.main:app --host 127.0.0.1 --port 8400 --log-level info
+Environment=PATH=/home/claude/go/bin:/home/claude/.local/go/bin:/usr/local/bin:/usr/bin:/bin
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

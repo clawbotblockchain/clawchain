@@ -18,3 +18,18 @@ clawchain-state.md
 scripts/deploy-local.sh
 config/nginx/api.clawchain.vsa.co.za
 config/nginx/rpc.clawchain.vsa.co.za
+
+# Gateway local files
+gateway/.env
+gateway/.venv/
+gateway/__pycache__/
+gateway/data/
+gateway/*.nginx
+gateway/nginx-gateway.conf
+
+# Dashboard (private, not public)
+dashboard/
+
+# Research notes
+openclaw-research.md
+research-openclaw-ecosystem.md

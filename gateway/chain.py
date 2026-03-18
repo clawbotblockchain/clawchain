@@ -122,7 +122,7 @@ def register_worker(key_name: str, worker_name: str) -> str | None:
 def send_heartbeat(key_name: str) -> str | None:
     """Send a heartbeat transaction for a worker."""
     result = _run([
-        BINARY, "tx", "participation", "heartbeat",
+        BINARY, "tx", "participation", "worker-heartbeat",
         "--from", key_name,
         *_common_tx_flags(),
     ])
@@ -139,7 +139,9 @@ def send_heartbeat(key_name: str) -> str | None:
 def query_worker(address: str) -> dict | None:
     """Query worker info from the chain."""
     result = _run([
-        BINARY, "query", "participation", "worker", address,
+        BINARY, "query", "participation", "get-worker-info",
+        "--address", address,
+        "--home", GATEWAY_HOME,
         "--node", NODE_URL,
         "--output", "json",
     ])
@@ -154,7 +156,9 @@ def query_worker(address: str) -> dict | None:
 def query_worker_rewards(address: str) -> dict | None:
     """Query worker rewards from the chain."""
     result = _run([
-        BINARY, "query", "participation", "worker-rewards", address,
+        BINARY, "query", "participation", "worker-rewards",
+        "--address", address,
+        "--home", GATEWAY_HOME,
         "--node", NODE_URL,
         "--output", "json",
     ])
@@ -170,6 +174,7 @@ def query_worker_stats() -> dict | None:
     """Query aggregate worker stats from the chain."""
     result = _run([
         BINARY, "query", "participation", "worker-stats",
+        "--home", GATEWAY_HOME,
         "--node", NODE_URL,
         "--output", "json",
     ])
@@ -193,6 +198,7 @@ def get_operational_balance() -> str:
     address = result.stdout.strip()
     bal_result = _run([
         BINARY, "query", "bank", "balances", address,
+        "--home", GATEWAY_HOME,
         "--node", NODE_URL,
         "--output", "json",
     ])

@@ -4,7 +4,7 @@ services:
   gateway:
     build: .
     ports:
-      - "8080:8080"
+      - "8400:8400"
     environment:
       - CHAIN_ID=clawchain-1
       - NODE_URL=tcp://host.docker.internal:26657

@@ -22,8 +22,9 @@ The Gateway lets any HTTP client become a ClawChain worker without running `claw
 ### Setup
 
 ```bash
-# Install dependencies
-pip install -r requirements.txt
+# Create venv and install dependencies
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
 
 # Create the gateway operational key
 clawchaind keys add gateway-operational --keyring-backend test --home ~/.clawchain-gateway
@@ -33,7 +34,7 @@ clawchaind tx bank send treasury <gateway-operational-address> 10000000000000000
   --chain-id clawchain-1 --keyring-backend test --yes
 
 # Start the gateway
-uvicorn gateway.main:app --host 0.0.0.0 --port 8080
+./start.sh
 ```
 
 ### Docker
@@ -44,32 +45,39 @@ docker compose up -d
 
 ## API
 
+**Base URL:** `https://api.clawchain.vsa.co.za`
+
 ### Register a Worker
 ```bash
-curl -X POST http://localhost:8080/gateway/workers/register \
+curl -X POST https://api.clawchain.vsa.co.za/gateway/workers/register \
   -H "Content-Type: application/json" \
   -d '{"name": "MyBot", "platform": "openclaw"}'
 ```
 
 ### Ping (every 5 minutes)
 ```bash
-curl -X POST http://localhost:8080/gateway/workers/{worker_id}/ping \
+curl -X POST https://api.clawchain.vsa.co.za/gateway/workers/{worker_id}/ping \
   -H "X-Ping-Token: {your-token}"
 ```
 
 ### Check Status
 ```bash
-curl http://localhost:8080/gateway/workers/{worker_id}/status
+curl https://api.clawchain.vsa.co.za/gateway/workers/{worker_id}/status
 ```
 
 ### List All Workers
 ```bash
-curl http://localhost:8080/gateway/workers
+curl https://api.clawchain.vsa.co.za/gateway/workers
 ```
 
 ### Gateway Stats
 ```bash
-curl http://localhost:8080/gateway/stats
+curl https://api.clawchain.vsa.co.za/gateway/stats
+```
+
+### Health Check
+```bash
+curl https://api.clawchain.vsa.co.za/gateway/health
 ```
 
 ## Environment Variables
@@ -80,11 +88,25 @@ curl http://localhost:8080/gateway/stats
 | `NODE_URL` | `tcp://localhost:26657` | RPC endpoint |
 | `GATEWAY_KEY_NAME` | `gateway-operational` | Key name for funding accounts |
 | `GATEWAY_HOME` | `~/.clawchain-gateway` | Keyring directory |
-| `DATABASE_URL` | `sqlite:///./data/gateway.db` | SQLite database path |
+| `DATABASE_URL` | `sqlite:///gateway/data/gateway.db` | SQLite database path |
 | `GATEWAY_BASE_URL` | `https://api.clawchain.vsa.co.za` | Public URL for ping_url in responses |
 | `CLAWCHAIND_PATH` | `clawchaind` | Path to clawchaind binary |
 | `LOG_LEVEL` | `INFO` | Logging level |
 | `FUND_AMOUNT` | `1aclaw` | Amount to fund new worker accounts |
+
+## Deployment
+
+The Gateway runs as a systemd service on port 8400, proxied through nginx at `api.clawchain.vsa.co.za/gateway/`.
+
+```bash
+# Install systemd service
+sudo cp clawchain-gateway.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now clawchain-gateway.service
+
+# Check status
+sudo systemctl status clawchain-gateway.service
+```
 
 ## Architecture
 
@@ -94,11 +116,11 @@ Bot (any platform)
   │  POST /gateway/workers/register     (once)
   │  POST /gateway/workers/{id}/ping    (every 5 min)
   ▼
-Gateway (FastAPI + SQLite)
+Gateway (FastAPI + SQLite, port 8400)
   │
   │  Scheduler runs every 4 min
   │  For each worker with recent ping:
-  │    → clawchaind tx participation heartbeat
+  │    → clawchaind tx participation worker-heartbeat
   ▼
 ClawChain (clawchain-1)
   │
