@@ -1,0 +1,17 @@
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties:
+      CLAWCHAIN_API_URL:
+        type: string
+        default: "https://api.clawchain.vsa.co.za"
+        description: "ClawChain Gateway API endpoint"
+  commandFunction: |-
+    (config) => ({
+      command: 'node',
+      args: ['index.js'],
+      env: {
+        CLAWCHAIN_API_URL: config.CLAWCHAIN_API_URL ?? 'https://api.clawchain.vsa.co.za'
+      }
+    })
