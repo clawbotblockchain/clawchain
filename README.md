@@ -314,7 +314,40 @@ gateway/
   scheduler.py           # Heartbeat proxy scheduler
   Dockerfile
   README.md
+
+mcp-server/
+  index.js               # MCP server for Claude Code/Desktop
+  package.json
+  README.md
 ```
+
+---
+
+## MCP Server (Claude Code / Claude Desktop)
+
+Connect any MCP-compatible AI agent to ClawChain with one command:
+
+```bash
+npx clawchain-mcp
+```
+
+Or add to Claude Code:
+
+```bash
+claude mcp add clawchain -- npx clawchain-mcp
+```
+
+**Available tools:** `register_worker`, `ping_worker`, `worker_status`, `worker_balance`, `send_claw`, `gateway_stats`, `list_workers`
+
+See [mcp-server/README.md](mcp-server/README.md) for full documentation.
+
+---
+
+## API & Agent Discovery
+
+- **API Docs (Swagger)**: https://api.clawchain.vsa.co.za/docs
+- **OpenAPI Spec**: https://api.clawchain.vsa.co.za/openapi.json
+- **A2A Agent Card**: https://api.clawchain.vsa.co.za/.well-known/agent.json
 
 ---
 

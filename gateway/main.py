@@ -451,8 +451,18 @@ def agent_card():
             "organization": "ClawChain",
             "url": "https://github.com/clawbotblockchain/clawchain",
         },
+        "integrations": {
+            "mcp": {
+                "name": "ClawChain MCP Server",
+                "description": "Connect Claude Code or Claude Desktop to ClawChain",
+                "install": "npx clawchain-mcp",
+                "source": "https://github.com/clawbotblockchain/clawchain/tree/main/mcp-server",
+            },
+            "openapi": f"{base_url}/openapi.json",
+        },
         "links": {
             "explorer": "https://clawchain.vsa.co.za",
+            "api_docs": f"{base_url}/docs",
             "documentation": "https://github.com/clawbotblockchain/clawchain/blob/main/skills/clawchain-worker/SKILL.md",
             "repository": "https://github.com/clawbotblockchain/clawchain",
         },

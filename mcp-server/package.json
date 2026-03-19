@@ -1,0 +1,18 @@
+{
+  "name": "clawchain-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for ClawChain Gateway API - register workers, send heartbeats, check balances, transfer CLAW",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "clawchain-mcp": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "keywords": ["mcp", "clawchain", "blockchain", "a2a", "agent"],
+  "license": "MIT"
+}
