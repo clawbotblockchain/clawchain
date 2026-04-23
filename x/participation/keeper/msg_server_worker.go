@@ -144,6 +144,37 @@ func (k msgServer) UnregisterWorker(ctx context.Context, msg *types.MsgUnregiste
 	return &types.MsgUnregisterWorkerResponse{}, nil
 }
 
+// ReactivateWorker marks a previously deactivated worker as active again.
+// Resets LastHeartbeatTime to the current block so the worker does not immediately
+// re-deactivate. Only the worker itself can reactivate its registration.
+func (k msgServer) ReactivateWorker(ctx context.Context, msg *types.MsgReactivateWorker) (*types.MsgReactivateWorkerResponse, error) {
+	if _, err := k.addressCodec.StringToBytes(msg.Creator); err != nil {
+		return nil, errorsmod.Wrap(types.ErrInvalidAddress, "invalid creator address")
+	}
+
+	worker, err := k.Keeper.WorkerInfo.Get(ctx, msg.Creator)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return nil, errorsmod.Wrap(types.ErrWorkerNotFound, msg.Creator)
+		}
+		return nil, err
+	}
+
+	if worker.Active {
+		return nil, errorsmod.Wrap(types.ErrWorkerAlreadyActive, msg.Creator)
+	}
+
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	worker.Active = true
+	worker.LastHeartbeatTime = uint64(sdkCtx.BlockTime().Unix())
+
+	if err := k.Keeper.WorkerInfo.Set(ctx, msg.Creator, worker); err != nil {
+		return nil, err
+	}
+
+	return &types.MsgReactivateWorkerResponse{}, nil
+}
+
 // ClaimWorkerRewards claims all unclaimed worker rewards.
 func (k msgServer) ClaimWorkerRewards(ctx context.Context, msg *types.MsgClaimWorkerRewards) (*types.MsgClaimWorkerRewardsResponse, error) {
 	if _, err := k.addressCodec.StringToBytes(msg.Creator); err != nil {

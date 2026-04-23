@@ -13,6 +13,7 @@ func RegisterInterfaces(registrar codectypes.InterfaceRegistry) {
 		&MsgWorkerHeartbeat{},
 		&MsgUnregisterWorker{},
 		&MsgClaimWorkerRewards{},
+		&MsgReactivateWorker{},
 	)
 
 	registrar.RegisterImplementations((*sdk.Msg)(nil),

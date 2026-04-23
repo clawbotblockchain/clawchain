@@ -63,6 +63,14 @@ service Msg {
       body: "*"
     };
   }
+
+  // ReactivateWorker reactivates a previously deactivated worker. Self-service: the worker signs.
+  rpc ReactivateWorker(MsgReactivateWorker) returns (MsgReactivateWorkerResponse) {
+    option (google.api.http) = {
+      post: "/clawbotblockchain/clawchain/participation/v1/reactivate-worker"
+      body: "*"
+    };
+  }
 }
 
 // MsgUpdateParams is the Msg/UpdateParams request type.
@@ -135,3 +143,12 @@ message MsgClaimWorkerRewards {
 message MsgClaimWorkerRewardsResponse {
   string claimed_amount = 1;
 }
+
+// MsgReactivateWorker reactivates a previously deactivated worker.
+message MsgReactivateWorker {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+// MsgReactivateWorkerResponse is the response for ReactivateWorker.
+message MsgReactivateWorkerResponse {}

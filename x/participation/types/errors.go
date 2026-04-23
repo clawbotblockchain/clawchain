@@ -21,4 +21,5 @@ var (
 	ErrHeartbeatTooEarly       = errors.Register(ModuleName, 1110, "heartbeat too early, must wait for interval")
 	ErrWorkerInactive          = errors.Register(ModuleName, 1111, "worker is inactive")
 	ErrMaxWorkersReached       = errors.Register(ModuleName, 1112, "maximum number of registered workers reached")
+	ErrWorkerAlreadyActive     = errors.Register(ModuleName, 1113, "worker is already active")
 )

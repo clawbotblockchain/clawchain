@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import subprocess
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -119,21 +120,68 @@ def register_worker(key_name: str, worker_name: str) -> str | None:
         return None
 
 
+def _wait_for_tx_commit(txhash: str, timeout_seconds: int = 10) -> tuple[int, str]:
+    """Poll `clawchaind query tx` until the tx is indexed or timeout elapses.
+
+    Returns (code, raw_log). code=0 means committed successfully. code>0 means the tx
+    landed in a block but the handler rejected it — raw_log carries the chain's reason.
+    A synthetic code=-1 means the tx never indexed within the timeout (broadcast failed
+    or tx is still pending — treat as failure for gateway purposes).
+    """
+    deadline = time.monotonic() + timeout_seconds
+    while time.monotonic() < deadline:
+        result = _run([
+            BINARY, "query", "tx", txhash,
+            "--node", NODE_URL,
+            "--output", "json",
+        ], timeout=5)
+        if result.returncode == 0 and result.stdout.strip():
+            try:
+                data = json.loads(result.stdout)
+                return int(data.get("code", 0)), str(data.get("raw_log", ""))
+            except json.JSONDecodeError:
+                pass
+        time.sleep(1)
+    return -1, "tx not indexed within timeout"
+
+
 def send_heartbeat(key_name: str) -> str | None:
-    """Send a heartbeat transaction for a worker."""
+    """Send a heartbeat transaction for a worker.
+
+    Returns the txhash ONLY if the tx was committed on-chain with code 0.
+    Returns None (and logs the on-chain error) if the tx failed at any stage:
+    broadcast rejected, tx timed out without indexing, or chain rejected the handler.
+    """
     result = _run([
         BINARY, "tx", "participation", "worker-heartbeat",
         "--from", key_name,
         *_common_tx_flags(),
     ])
     if result.returncode != 0:
-        logger.error("Heartbeat failed for %s: %s", key_name, result.stderr)
+        logger.error("Heartbeat broadcast failed for %s: %s", key_name, result.stderr.strip())
         return None
     try:
         tx_data = json.loads(result.stdout)
-        return tx_data.get("txhash")
     except json.JSONDecodeError:
+        logger.error("Heartbeat broadcast returned non-JSON output for %s: %s", key_name, result.stdout[:200])
         return None
+
+    broadcast_code = int(tx_data.get("code", 0))
+    txhash = tx_data.get("txhash")
+    if broadcast_code != 0:
+        logger.error("Heartbeat broadcast rejected for %s: code=%d raw_log=%s",
+                     key_name, broadcast_code, tx_data.get("raw_log", ""))
+        return None
+    if not txhash:
+        logger.error("Heartbeat broadcast returned no txhash for %s", key_name)
+        return None
+
+    commit_code, raw_log = _wait_for_tx_commit(txhash)
+    if commit_code != 0:
+        logger.error("Heartbeat rejected on-chain for %s: tx=%s code=%d reason=%s",
+                     key_name, txhash, commit_code, raw_log)
+        return None
+    return txhash
 
 
 def send_tokens(from_key: str, to_address: str, amount_aclaw: str) -> dict:
